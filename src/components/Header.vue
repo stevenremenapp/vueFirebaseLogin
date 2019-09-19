@@ -1,11 +1,11 @@
 <template>
-  <div id="nav">
+  <nav id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> |
     <router-link to="/dashboard">Dashboard</router-link> |
     <router-link v-if="!loggedIn" to="/login">Login</router-link>
     <a v-else @click="logout">Logout</a>
-  </div>
+  </nav>
 </template>
 
 <script>

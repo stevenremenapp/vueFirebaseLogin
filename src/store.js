@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import VuexPersist from "vuex-persist";
-// import axios from "./services/axios-auth";
+import axios from "./services/axios-auth";
 import localForage from "localforage";
 import router from "./router";
 import firebase from "firebase/app";
@@ -23,7 +23,8 @@ export default new Vuex.Store({
     refreshToken: null,
     // expirationDate: null,
     userId: null,
-    user: null
+    user: null,
+    homeImages: []
   },
   mutations: {
     login(state, userData) {
@@ -38,6 +39,9 @@ export default new Vuex.Store({
       state.userId = "";
       // state.expirationDate = "";
       state.user = "";
+    },
+    getHomeImages(state, images) {
+      state.homeImages = images.homeImages;
     }
   },
   actions: {
@@ -91,10 +95,18 @@ export default new Vuex.Store({
     logout({ commit }) {
       commit("logout");
       router.push("/login");
+    },
+    getHomeImages({ commit }) {
+      axios.get("https://picsum.photos/v2/list?limit=20").then(response => {
+        commit("getHomeImages", {
+          homeImages: response.data
+        });
+      });
     }
   },
   getters: {
-    // partially implemented
-    loggedIn: state => !!state.refreshToken
+    // partially implemented-- look into real user session auth
+    loggedIn: state => !!state.refreshToken,
+    getHomeImages: state => state.homeImages
   }
 });
