@@ -8,6 +8,7 @@ import BootstrapVue from "bootstrap-vue/dist/bootstrap-vue.esm";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "./styles/styles.scss";
+import "./assets/vendor/fontAwesome/css/all.css";
 
 Vue.config.productionTip = false;
 Vue.use(BootstrapVue);
