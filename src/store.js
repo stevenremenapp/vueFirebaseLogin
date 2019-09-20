@@ -94,7 +94,7 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       commit("logout");
-      router.push("/login");
+      router.push("/");
     },
     getHomeImages({ commit }) {
       axios.get("https://picsum.photos/v2/list?limit=20").then(response => {

@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <h1>Header will go here</h1>
     <h2>Splash info and call to action will go here</h2>
     <div>
       <b-card-group columns>
@@ -41,7 +40,11 @@ export default {
     }
   },
   created() {
-    this.getHomeImages();
+    if (this.$store.getters.getHomeImages.length > 0) {
+      return;
+    } else {
+      this.getHomeImages();
+    }
   }
 };
 

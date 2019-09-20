@@ -29,6 +29,16 @@ let router = new Router({
       component: () => import("./views/Login.vue")
     },
     {
+      path: "/signup",
+      name: "signup",
+      component: () => import("./views/SignUp.vue")
+    },
+    {
+      path: "/prosignup",
+      name: "prosignup",
+      component: () => import("./views/ProSignUp.vue")
+    },
+    {
       path: "/dashboard",
       name: "dashboard",
       component: () => import("./views/Dashboard.vue"),
