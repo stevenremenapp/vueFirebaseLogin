@@ -2,7 +2,7 @@
   <nav>
     <b-navbar toggleable="sm">
       <b-navbar-brand to="/">
-        <img src="../assets/img/houseLogo.png" alt="Logo" id="logo">
+        <img src="../assets/img/houseLogo.png" alt="Logo" id="logo" />
         TagPro
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -12,8 +12,11 @@
           <b-nav-item v-if="loggedIn" to="/dashboard">Dashboard</b-nav-item>
           <b-nav-item v-if="!loggedIn" to="/login">Login</b-nav-item>
           <b-nav-item v-else @click="logout">Logout</b-nav-item>
-          <!-- <b-nav-item v-if="!loggedIn" to="/signup">Sign Up</b-nav-item> -->
-          <b-button v-if="!loggedIn" to="/signup" variant="outline-secondary" class="ml-2 my-sm-0">Sign Up</b-button>
+          <b-nav-item v-if="!loggedIn" to="/signup">
+            <b-button variant="outline-secondary" class="ml-2 my-sm-0">
+              Sign Up
+            </b-button>
+          </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -40,8 +43,8 @@ export default {
 nav {
   border-bottom: 1px solid #e4e5e7;
   #logo {
-  max-width: 50px;
-  height: auto;
+    max-width: 50px;
+    height: auto;
   }
   .nav-text {
     text-align: right;
