@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>Splash info and call to action will go here</h2>
+    <h1>Splash info and call to action will go here</h1>
     <div>
       <b-card-group columns>
         <div>
@@ -53,6 +53,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+h1 {
+  padding: 10rem 0;
+  @media only screen and (max-width: 575px) {
+    padding: 6rem 0;
+  }
+}
+
 .card-columns {
   @media only screen and (max-width: 768px) {
     column-count: 1;
