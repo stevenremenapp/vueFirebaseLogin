@@ -11,6 +11,28 @@
           <label for="password">Password:&nbsp;</label>
           <input v-model="password" id="password" type="password" />
         </div>
+        <div>
+          <div>
+            <input
+              v-model="accountType"
+              type="radio"
+              id="pro"
+              name="userType"
+              value="pro"
+            />
+            <label for="pro">&nbsp;Pro</label>
+          </div>
+          <div>
+            <input
+              v-model="accountType"
+              type="radio"
+              id="consumer"
+              name="userType"
+              value="consumer"
+            />
+            <label for="consumer">&nbsp;Consumer</label>
+          </div>
+        </div>
         <br />
         <div>
           <button type="submit">Login</button>
@@ -26,17 +48,31 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      accountType: null
     };
   },
   methods: {
+    testType() {
+      console.log(this.accountType);
+    },
     login() {
-      this.$store
-        .dispatch("login", {
-          email: this.email,
-          password: this.password
-        })
-        .catch(err => console.log(err));
+      if (this.accountType === "consumer") {
+        this.$store
+          .dispatch("loginConsumer", {
+            email: this.email,
+            password: this.password
+          })
+          .catch(err => console.log(err));
+      }
+      if (this.accountType === "pro") {
+        this.$store
+          .dispatch("loginPro", {
+            email: this.email,
+            password: this.password
+          })
+          .catch(err => console.log(err));
+      }
     }
   }
 };

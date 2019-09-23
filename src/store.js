@@ -7,6 +7,7 @@ import router from "./router";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import { db } from "./main";
 // import App from "./firebase/app";
 
 Vue.use(Vuex);
@@ -23,25 +24,42 @@ export default new Vuex.Store({
     refreshToken: null,
     // expirationDate: null,
     userId: null,
-    user: null,
+    userEmail: null,
+    userFirstName: null,
+    userLastName: null,
+    userProStatus: null,
+    userBusinessName: null,
     homeImages: []
   },
   mutations: {
-    login(state, userData) {
+    GET_HOME_IMAGES(state, images) {
+      state.homeImages = images.homeImages;
+    },
+    LOGIN(state, userData) {
       console.log("userData", userData);
       state.refreshToken = userData.refreshToken;
       state.userId = userData.userId;
       // state.expirationDate = userData.expirationDate;
-      state.user = userData.user;
+      state.userEmail = userData.userEmail;
     },
-    logout(state) {
-      state.refreshToken = "";
-      state.userId = "";
+    LOGOUT(state) {
+      state.refreshToken = null;
+      state.userId = null;
       // state.expirationDate = "";
-      state.user = "";
+      state.userEmail = null;
+      state.userBusinessName = null;
+      state.userFirstName = null;
+      state.userLastName = null;
+      state.userProStatus = null;
     },
-    getHomeImages(state, images) {
-      state.homeImages = images.homeImages;
+    SET_USER_DATA(state, userData) {
+      console.log("USER DATA", userData);
+      if (userData.businessName !== null) {
+        state.userBusinessName = userData.userBusinessName;
+      }
+      state.userFirstName = userData.userFirstName;
+      state.userLastName = userData.userLastName;
+      state.userProStatus = userData.userProStatus;
     }
   },
   actions: {
@@ -74,39 +92,156 @@ export default new Vuex.Store({
     //     .catch(error => console.log(error));
     // },
     // LOGIN WITH FIREBASE METHODS
-    login({ commit }, authData) {
+    getHomeImages({ commit }) {
+      axios.get("https://picsum.photos/v2/list?limit=20").then(response => {
+        commit("GET_HOME_IMAGES", {
+          homeImages: response.data
+        });
+      });
+    },
+    loginPro({ commit }, authData) {
       firebase
         .auth()
         .signInWithEmailAndPassword(authData.email, authData.password)
         .then(response => {
-          console.log("commit", commit);
+          // console.log("commit", commit);
           console.log("user", response);
           console.log("user", response.user.refreshToken);
-          commit("login", {
+          db.collection("pros")
+            .doc(response.user.uid)
+            .get()
+            .then(response => {
+              console.log(response.data());
+              commit("SET_USER_DATA", {
+                userBusinessName: response.data().businessName,
+                userFirstName: response.data().firstName,
+                userLastName: response.data().lastName,
+                userProStatus: response.data().userProStatus
+              });
+            });
+          commit("LOGIN", {
             refreshToken: response.user.refreshToken,
             userId: response.user.uid,
             // expirationDate: expirationDate,
-            user: response.user.email
+            userEmail: response.user.email
+          });
+          router.push("./dashboard");
+        })
+        .catch(err => console.log(err));
+    },
+    loginConsumer({ commit }, authData) {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(authData.email, authData.password)
+        .then(response => {
+          // console.log("commit", commit);
+          console.log("user", response);
+          console.log("user", response.user.refreshToken);
+          db.collection("users")
+            .doc(response.user.uid)
+            .get()
+            .then(response => {
+              console.log(response.data());
+              commit("SET_USER_DATA", {
+                userBusinessName: null,
+                userFirstName: response.data().firstName,
+                userLastName: response.data().lastName,
+                userProStatus: response.data().userProStatus
+              });
+            });
+          commit("LOGIN", {
+            refreshToken: response.user.refreshToken,
+            userId: response.user.uid,
+            // expirationDate: expirationDate,
+            userEmail: response.user.email
           });
           router.push("./dashboard");
         })
         .catch(err => console.log(err));
     },
     logout({ commit }) {
-      commit("logout");
+      commit("LOGOUT");
       router.push("/");
     },
-    getHomeImages({ commit }) {
-      axios.get("https://picsum.photos/v2/list?limit=20").then(response => {
-        commit("getHomeImages", {
-          homeImages: response.data
-        });
-      });
+    signupConsumer({ commit }, authData) {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(authData.email, authData.password)
+        .then(response => {
+          // console.log(commit);
+          // console.log(response);
+          console.log(response.user.uid);
+          console.log(authData);
+          const createdAt = new Date();
+          let firstName = authData.firstName;
+          let lastName = authData.lastName;
+          let userProStatus = false;
+          db.collection("users")
+            .doc(response.user.uid)
+            .set({ createdAt, firstName, lastName, userProStatus });
+          commit("LOGIN", {
+            refreshToken: response.user.refreshToken,
+            userId: response.user.uid,
+            // expirationDate: expirationDate,
+            userEmail: response.user.email
+          });
+          commit("SET_USER_DATA", {
+            userBusinessName: null,
+            userFirstName: firstName,
+            userLastName: lastName,
+            userProStatus: userProStatus
+          });
+          router.push("./dashboard");
+        })
+        .catch(err => console.log(err));
+    },
+    signupPro({ commit }, authData) {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(authData.email, authData.password)
+        .then(response => {
+          // console.log(commit);
+          // console.log(response);
+          console.log(response.user.uid);
+          console.log(authData);
+          const createdAt = new Date();
+          const businessName = authData.businessName;
+          const firstName = authData.firstName;
+          const lastName = authData.lastName;
+          const userProStatus = true;
+          db.collection("pros")
+            .doc(response.user.uid)
+            .set({
+              createdAt,
+              businessName,
+              firstName,
+              lastName,
+              userProStatus
+            });
+          commit("LOGIN", {
+            refreshToken: response.user.refreshToken,
+            userId: response.user.uid,
+            // expirationDate: expirationDate,
+            userEmail: response.user.email
+          });
+          commit("SET_USER_DATA", {
+            userBusinessName: businessName,
+            userFirstName: firstName,
+            userLastName: lastName,
+            userProStatus: userProStatus
+          });
+          router.push("./dashboard");
+        })
+        .catch(err => console.log(err));
     }
   },
   getters: {
     // partially implemented-- look into real user session auth
     loggedIn: state => !!state.refreshToken,
-    getHomeImages: state => state.homeImages
+    getHomeImages: state => state.homeImages,
+    userBusinessName: state => state.userBusinessName,
+    userFirstName: state => state.userFirstName,
+    userLastName: state => state.userLastName,
+    userProStatus: state => state.userProStatus
   }
 });

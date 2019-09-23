@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Splash info and call to action will go here</h1>
+    <h1>Splash info and call to action(s) will go here</h1>
     <div>
       <b-card-group columns>
         <div>
